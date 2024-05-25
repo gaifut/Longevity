@@ -1,0 +1,26 @@
+version: '3'
+
+volumes:
+  pg_data:
+
+services:
+  db:
+    image: postgres:13.10
+    env_file: ./longevity/.env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  longevity:
+    build: ./longevity/
+    env_file: ./longevity/.env
+    depends_on:
+      - db
+    expose:
+      - "8000"
+
+  nginx:
+    build: ./nginx/
+    ports:
+      - "8000:80"
+    depends_on:
+      - longevity
